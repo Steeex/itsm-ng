@@ -1659,6 +1659,9 @@ class Auth extends CommonGLPI {
             'ClientSecret'  => $_POST["clientSecret"],
             'is_activate'  => $_POST["useoidc"],
             'is_forced'  => $_POST["forceoidc"],
+            'use_ssl'   => $_POST["use_ssl"],
+            'certificate'  => $_POST["certificate"],
+            'proxy'  => $_POST["proxy"],
             'scope'  => $_POST["scope"]
          ];
         $DB->updateOrInsert("glpi_oidc_config", $oidc_result, ['id'   => 0]);
@@ -1666,12 +1669,15 @@ class Auth extends CommonGLPI {
       $criteria = "SELECT * FROM glpi_oidc_config";
       $iterators = $DB->request($criteria);
       foreach($iterators as $iterator) {
-          $oidc_db['Provider'] = $iterator['Provider'];
-          $oidc_db['ClientID'] = $iterator['ClientID'];
-          $oidc_db['ClientSecret'] = $iterator['ClientSecret'];
-          $oidc_db['is_activate'] = $iterator['is_activate'];
-          $oidc_db['is_forced'] = $iterator['is_forced'];
-          $oidc_db['scope'] = $iterator['scope'];
+         $oidc_db['Provider'] = $iterator['Provider'];
+         $oidc_db['ClientID'] = $iterator['ClientID'];
+         $oidc_db['ClientSecret'] = $iterator['ClientSecret'];
+         $oidc_db['is_activate'] = $iterator['is_activate'];
+         $oidc_db['is_forced'] = $iterator['is_forced'];
+         $oidc_db['use_ssl'] = $iterator['use_ssl'];
+         $oidc_db['certificate'] = $iterator['certificate'];
+         $oidc_db['proxy'] = $iterator['proxy'];
+         $oidc_db['scope'] = $iterator['scope'];
       }
       
 
@@ -1682,58 +1688,90 @@ class Auth extends CommonGLPI {
       echo "<td>".__("Activate open ID connect")."</td>";
       echo "<td>";
       if (isset($oidc_db['is_activate'])) {
-       Dropdown::showYesNo('useoidc', $oidc_db['is_activate'],-1,['use_checkbox' => false]);
-   } else {
-       Dropdown::showYesNo('useoidc', 0,-1,['use_checkbox' => false]);
-   }
+         Dropdown::showYesNo('useoidc', $oidc_db['is_activate'],-1,['use_checkbox' => false]);
+      } else {
+         Dropdown::showYesNo('useoidc', 0,-1,['use_checkbox' => false]);
+      }
       echo "</td></tr>";
       echo "<tr class='tab_bg_1'>";
       echo "<td>".__("Forced connection with open ID connect")."</td>";
       echo "<td>";
       if (isset($oidc_db['is_forced'])) {
-       Dropdown::showYesNo('forceoidc', $oidc_db['is_forced'],-1,['use_checkbox' => false]);
-   } else {
-       Dropdown::showYesNo('forceoidc', 0,-1,['use_checkbox' => false]);
-   }
+         Dropdown::showYesNo('forceoidc', $oidc_db['is_forced'],-1,['use_checkbox' => false]);
+      } else {
+         Dropdown::showYesNo('forceoidc', 0,-1,['use_checkbox' => false]);
+      }
+
+      echo "</td></tr>";
+      echo "<tr class='tab_bg_1'>";
+      echo "<td>".__("Use SSL")."</td>";
+      echo "<td>";
+      if (isset($oidc_db['use_ssl'])) {
+          Dropdown::showYesNo('use_ssl', $oidc_db['use_ssl'],-1,['use_checkbox' => false]);
+      } else {
+          Dropdown::showYesNo('use_ssl', 0,-1,['use_checkbox' => false]);
+      }
+
+      echo "</td></tr>";
+      echo "<tr class='tab_bg_1'>";
+      echo "<td>Certificate Path</td>";
+      echo "<td>";
+      if (isset($oidc_db['certificate'])) {
+          echo "<input type='text' id='certificate' name='certificate'value=". $oidc_db['certificate'] .">";
+      } else {
+          echo "<input type='text' id='certificate' name='certificate' placeholder='https://id.provider.com/certificate'>";
+      }
+
+      echo "</td></tr>";
+      echo "<tr class='tab_bg_1'>";
+      echo "<td>Proxy</td>";
+      echo "<td>";
+      if (isset($oidc_db['proxy'])) {
+          echo "<input type='text' id='proxy' name='proxy'value=". $oidc_db['proxy'] .">";
+      } else {
+          echo "<input type='text' id='proxy' name='proxy' placeholder='http://my.proxy.com:80/'>";
+      }
+
+
       echo "</td></tr>";
       echo "<tr class='tab_bg_1'>";
       echo "<td>Provider</td>";
       echo "<td>";
       if (isset($oidc_db['Provider'])) {
-       echo "<input type='text' id='provider' name='provider'value=". $oidc_db['Provider'] .">";
-   } else {
-       echo "<input type='text' id='provider' name='provider' placeholder='https://id.provider.com'>";
-   }
+         echo "<input type='text' id='provider' name='provider'value=". $oidc_db['Provider'] .">";
+      } else {
+         echo "<input type='text' id='provider' name='provider' placeholder='https://id.provider.com'>";
+      }
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_1'>";
       echo "<td>Client ID</td>";
       echo "<td>";
-   if (isset($oidc_db['ClientID'])) {
-       echo "<input type='text' id='clientID' name='clientID'value=". $oidc_db['ClientID'] .">";
-   } else {
-       echo "<input type='text' id='clientID' name='clientID'>";
-   }
+      if (isset($oidc_db['ClientID'])) {
+         echo "<input type='text' id='clientID' name='clientID'value=". $oidc_db['ClientID'] .">";
+      } else {
+         echo "<input type='text' id='clientID' name='clientID'>";
+      }
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_1'>";
       echo "<td>Client Secret</td>";
       echo "<td>";
-   if (isset($oidc_db['ClientSecret'])) {
-       echo "<input type='password' id='clientSecret' name='clientSecret'value=". $oidc_db['ClientSecret'] .">";
-   } else {
-       echo "<input type='password' id='clientSecret' name='clientSecret' >";
-   }
+      if (isset($oidc_db['ClientSecret'])) {
+         echo "<input type='password' id='clientSecret' name='clientSecret'value=". $oidc_db['ClientSecret'] .">";
+      } else {
+         echo "<input type='password' id='clientSecret' name='clientSecret' >";
+      }
       echo "</td></tr>";
       
       echo "<tr class='tab_bg_1'>";
       echo "<td>" . __('Scopes') . "</td>";
       echo "<td>";
-   if (isset($oidc_db['scope'])) {
-       echo "<input type='text' id='scope' name='scope'value=". str_replace(' ', '', $oidc_db['scope']) .">";
-   } else {
-       echo "<input type='text' id='scope' name='scope' placeholder='scope1,scope2'>";
-   }
+      if (isset($oidc_db['scope'])) {
+         echo "<input type='text' id='scope' name='scope'value=". str_replace(' ', '', $oidc_db['scope']) .">";
+      } else {
+         echo "<input type='text' id='scope' name='scope' placeholder='scope1,scope2'>";
+      }
       echo "</td></tr>";
       
       echo "<tr class='tab_bg_2'><td class='center' colspan='4'>";

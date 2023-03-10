@@ -55,6 +55,9 @@ class Oidc extends CommonDBTM {
           $oidc_db['Provider'] = $iterator['Provider'];
           $oidc_db['ClientID'] = $iterator['ClientID'];
           $oidc_db['ClientSecret'] = $iterator['ClientSecret'];
+          $oidc_db['use_ssl'] = $iterator['use_ssl'];
+          $oidc_db['certificate'] = $iterator['certificate'];
+          $oidc_db['proxy'] = $iterator['proxy'];
           $oidc_db['scope'] = explode(',', addslashes(str_replace(' ', '', $iterator['scope'])));
       }
 
@@ -64,16 +67,32 @@ class Oidc extends CommonDBTM {
       }
       $oidc->setHttpUpgradeInsecureRequests(false);
       try {
-          $oidc->authenticate();
+         // set certificate path
+         if (isset($oidc_db['use_ssl']) && $oidc_db['use_ssl'] == 1 && isset($oidc_db['certificate']) && !empty($oidc_db['certificate'])) {
+            $oidc->setCertPath($oidc_db['certificate']);
+         } elseif (isset($oidc_db['use_ssl']) && $oidc_db['use_ssl'] == 0) {
+               $oidc->setVerifyHost(false);
+               $oidc->setVerifyPeer(false);
+         }
+
+         // set proxy
+         if (isset($oidc_db['proxy']) && !empty($oidc_db['proxy'])) {
+            $oidc->setHttpProxy($oidc_db['proxy']);
+         }
+         
+        $oidc->authenticate();
+
+
       } catch( Exception $e ) {
-          //If something go wrong 
-          Html::nullHeader("Login", $CFG_GLPI["root_doc"] . '/index.php');
-          echo '<div class="center b">';
-          echo __('Missing or wrong fields in open ID connect config');
-          echo '<p><a href="'. $CFG_GLPI['root_doc'] . "/index.php" .'">' .__('Log in again') . '</a></p>';
-          echo '</div>';
-          Html::nullFooter();
-          die;
+         //If something go wrong 
+         Html::nullHeader("Login", $CFG_GLPI["root_doc"] . '/index.php');
+         echo '<div class="center b">';
+         Toolbox::logError($e->getMessage());
+         echo __('Missing or wrong fields in open ID connect config');
+         echo '<p><a href="'. $CFG_GLPI['root_doc'] . "/index.php" .'">' .__('Log in again') . '</a></p>';
+         echo '</div>';
+         Html::nullFooter();
+         die;
       }
 
       $result = $oidc->requestUserInfo();
@@ -81,8 +100,7 @@ class Oidc extends CommonDBTM {
       $user_array = json_encode($result);
       $user_array = json_decode($user_array,true);
       self::$_user_data = $user_array;
-      //var_dump(self::$_user_data);
-      //die;
+
       //Create and/or authenticated a user
       $criteria = "SELECT * FROM glpi_users";
       $iterators = $DB->request($criteria);
