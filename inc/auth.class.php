@@ -493,7 +493,9 @@ class Auth extends CommonGLPI {
             }
 
             // no SSL validation for the CAS server
-            phpCAS::setNoCasServerValidation();
+            if (!$CFG_GLPI["cas_ssl"]) {
+               phpCAS::setNoCasServerValidation();
+            }
 
             // force CAS authentication
             phpCAS::forceAuthentication();
@@ -1493,7 +1495,11 @@ class Auth extends CommonGLPI {
          //TRANS: for CAS SSO system
          echo "<tr class='tab_bg_2'><td class='center'>" . __('Log out fallback URL') . "</td>";
          echo "<td><input type='text' name='cas_logout' value=\"".$CFG_GLPI["cas_logout"]."\"></td>".
-              "</tr>\n";
+              "</tr>\n";;
+         //TRANS: for CAS SSO system
+         echo "<tr class='tab_bg_2'><td class='center'>" . __('Enable SSL')."</td><td>";
+         Dropdown::showYesNo('cas_ssl', $CFG_GLPI['cas_ssl']);
+         echo "</td></tr>\n";
       } else {
          echo "<tr class='tab_bg_2'><td class='center' colspan='2'>";
          if (!function_exists('curl_init')) {
