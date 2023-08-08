@@ -1,0 +1,38 @@
+{% from "macros.twig" import table %}
+<body class={{body_class}}>
+
+{# imersponeat #}
+qsdfqsdf
+{% if impersonate_banner is defined %}
+azehgaezaezg
+{% endif %}
+
+    <div id='header'>
+        <header role='banner' id='header_top'>
+        <div id='c_logo'>
+        <a href="{{root_doc}}/front/central.php" accesskey='1' title={{"Home"|trans}}>
+            <span class='sr-only'>{{"Home"|trans}}</span>
+        </a>
+        </div>
+
+{# topmenu #}
+{% include top_menu.path with top_menu.args%}
+        </header> {# fin header_top #}
+
+{% include main_menu.path with main_menu.args%}
+    </div> {# fin header #}
+
+{# Back to top button #}
+<span class='fa-stack fa-lg' id='backtotop' style='display: none'>
+   <i class='fa fa-circle fa-stack-2x primary-fg-inverse'></i>
+    <a href='#' class='fa fa-arrow-up fa-stack-1x primary-fg' title={{'Back to top of the page'|trans}}>
+        <span class='sr-only'>Top of the page</span>
+    </a>
+</span>
+
+<main role='main' id='page'>
+{% if is_slave %}
+    <div id='dbslave-float'>
+        <a href='#see_debug'>{{'SQL replica: read only'|trans}}</a>
+    </div>
+{% endif %}

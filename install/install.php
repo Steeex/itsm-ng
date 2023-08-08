@@ -19,7 +19,7 @@ use Glpi\System\RequirementsManager;
 
 require_once GLPI_ROOT . "/ng/languages/language.class.php";
 require_once GLPI_ROOT . "/ng/twig.function.php";
-$twig = Twig::load(GLPI_ROOT . "/templates/install", false);
+$twig = Twig::load(GLPI_ROOT . "/templates", false);
 
 //allow previous page action
 header("Cache-Control: private, max-age=10800, pre-check=10800");
@@ -264,7 +264,7 @@ switch ($step) {
 }
     
 try {
-    echo $twig->render('index.twig',  ['step' => $step,'header_data' => $header_data] + $twig_vars);
+    echo $twig->render('install/index.twig',  ['step' => $step,'header_data' => $header_data] + $twig_vars);
 } catch (\Exception $e) {
     echo $e->getMessage();
 }

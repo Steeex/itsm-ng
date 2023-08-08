@@ -1440,3 +1440,172 @@ div#show_all_menu {
 .timeline_history {
    border-top: none;
 }
+
+td
+table, thead, tbody, .fixed-table-container.fixed-height .table thead th,th, tr, td{
+   background-color: transparent !important;
+   color: white !important;
+   border: none !important;
+   font-size: 1rem;
+   text-wrap: balance;
+}
+
+.table-container{
+   margin-top: 10px;
+   --table-broder-radius: 10px;
+   width: 100%;
+   border-radius: var(--table-broder-radius);
+   height: 70%;
+   background: linear-gradient(90deg,rgb(255, 133, 52), rgb(255, 94, 0));
+   /* background: radial-gradient(ellipse at center, #ff5221 0%, #ffb33b 100%);
+   background-size: 250% 250%; */
+   /* background:rgba(0, 0, 0, 0.4); */
+}
+
+/* 
+.fresh-table{
+   max-height: 70% !important;
+} */
+
+.bootstrap-table{
+   height: 100% !important;
+}
+.fixed-height{
+   display: block;
+   /* padding-bottom: calc(49px) !important; taille table header 49px, search bar 70px */
+   box-sizing: border-box;
+   height: calc(100% - 48px);
+}
+
+.fixed-table-container{
+   overflow: hidden;
+   padding: 0 !important;
+   border-bottom: 0 !important;
+}
+.fixed-table-body{
+   display: block;
+   overflow-y: scroll;
+   box-sizing: border-box;
+   height: calc(100% - 48px) !important;
+
+}
+.fixed-table-toolbar{
+   display: flex;
+   justify-content: space-between;
+   background-color: transparent;
+   padding: 0;
+   margin: 0 10px;
+}
+.fixed-table-toolbar::after{
+   display: none !important;
+}
+.fixed-table-toolbar>.search>.search-input{
+   border-color: rgba(255, 255, 255, 0.8);
+   background-color: transparent;
+   color: #FFFFFF;
+   border-radius: 30px;
+}
+.fixed-table-toolbar>.search>.search-input::placeholder{
+   transition: box-shadow 0.3s linear;
+   color: #FFFFFF;
+}
+.fixed-table-toolbar>.search>.search-input:focus{
+   background-color: rgba(255, 255, 255, 0.2);
+   box-shadow: none;
+}
+.fixed-table-body{
+   overflow-x: hidden !important;
+} 
+
+.bootstrap-table .table > tfoot > tr > th, .bootstrap-table .table > thead > tr > th {
+   padding-top: 0 !important;
+   padding-bottom: 0 !important;
+}
+.check-result{
+   text-align: center;
+}
+tbody>tr:nth-child(odd){
+   background-color: rgba(255, 255, 255, 0.15) !important;
+}
+td{
+   width: 50%;
+}
+.fixed-table-toolbar .btn-group{
+   margin-bottom: 0 !important;
+}
+.dropdown-menu{
+   visibility: visible;
+   opacity: 1;
+   display: none;
+   overflow-x: hidden !important;
+   color: var(--text-color);
+}
+.dropdown-menu.show{
+   display: block;
+}
+.table{
+   max-height: 50vh;
+   display: table;
+}
+
+.dropdown-menu{
+   max-height: 50vh;
+   overflow-x: hidden;
+   padding-right: 9px;
+}
+.bs-searchbox .form-control{
+   box-sizing: border-box;
+   /* padding-right: 0;
+   padding-left: 0; */
+}
+div.chip{
+   margin: 0 auto;
+   position: relative;
+   display: flex;
+   flex-direction: row;
+   justify-content: center;
+   align-items: center;
+   background-color: rgba(150, 223, 176, 0.9) !important;
+   color: #428859;
+   width: fit-content;
+   padding: 0 10px;
+   border-radius: 30px;
+}
+div.chip.validated{
+   background-color: rgba(150, 223, 176, 0.9) !important;
+   color: #428859;
+}
+div.chip.optional{
+   background-color: rgba(172, 83, 0, 0.9) !important;
+   color: rgb(245, 59, 59);
+}
+div.chip.required{
+   background-color: rgba(226, 97, 97, 0.9) !important;
+   color: rgb(255, 0, 0);
+}
+.transparent{
+   background-color: transparent !important;
+   color: transparent !important;
+   user-select: none;
+}
+div.chip>p{
+   position: relative;
+   padding: 10px;
+}
+.required2{
+   position: relative;
+   padding: 10px 0;
+}
+.required-message{
+   margin-top: 20px;
+   padding: 10px 20px;
+   position: relative;
+   width: calc(200% - 18px);
+   color: var(--text-color);
+   background-color: rgba(255, 0, 0, 0.5);
+   border-radius: 5px 5px 20px 20px;
+   text-wrap: balance;
+}
+.check-row{
+   margin-bottom: 0px;
+}

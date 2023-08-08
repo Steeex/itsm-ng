@@ -1,0 +1,75 @@
+{# TODO ADD TRAAAAAAAAAAANS #}
+
+
+<nav class="nav-side-menu">
+    {# <div class="brand">Menu</div>
+    <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i> #}
+  
+        <div class="menu-list">
+  
+            <ul id="menu-content" class="menu-content collapse out">
+                {# <li>
+                  <a href="#">
+                  <i class="fa fa-dashboard fa-lg"></i> Dashboard
+                  </a>
+                </li> #}
+                {% for data in menu|filter(data => data['show_menu']) %}
+                <li data-toggle="collapse" id='menu{{loop.index}}' data-target="#products{{loop.index0}}" data-id='{{loop.index}}' class='collapsed menu-row {{data['class']}}'> {# loop.index starts at 1 mettre active bone page #}
+                    <a  class='itemP'>{{data['title']}}</a><i class="rightz fas fa-arrow-down"></i>
+                </li>
+                {# <li  data-toggle="collapse" data-target="#products" class="collapsed active">
+                  <a href="#"><i class="fa fa-gift fa-lg"></i> UI Elements <span class="arrow"></span></a>
+                </li> #}
+                {# <ul class='ssmenu sub-menu collapse'>
+                    <li>aaa</li>
+                    <li>aaa</li>
+                    <li>aaa</li>
+                </ul> #}
+                {% if data['show_sub_menu'] %}
+                <ul class='ssmenu sub-menu collapse' id="products{{loop.index0}}">
+                {% for key,val in data['content']|filter(val => val['show_sub_menu']) %}
+                            <li >
+                                <a href='{{[root_doc,val['page']]|join}}' {{val['shortcut_attr']|raw}}>
+                                    <i class='fa-fw {{val['icon']}}'></i>{{val['title']}}
+                                </a>
+                            </li>
+                {% endfor %}
+                </ul>
+                {% endif %}
+                {# <ul class="sub-menu collapse" id="products">
+                    <li class="active"><a href="#">CSS3 Animation</a></li>
+                    <li><a href="#">General</a></li>
+                    <li><a href="#">Buttons</a></li>
+                    <li><a href="#">Tabs & Accordions</a></li>
+                    <li><a href="#">Typography</a></li>
+                    <li><a href="#">FontAwesome</a></li>
+                    <li><a href="#">Slider</a></li>
+                    <li><a href="#">Panels</a></li>
+                    <li><a href="#">Widgets</a></li>
+                    <li><a href="#">Bootstrap Model</a></li>
+                </ul> #}
+
+
+                {% endfor %}
+            </ul>
+     </div>
+</div>
+<div id='c_ssmenu2' >
+    <ul>
+        <li class='breadcrumb_item'> {# need menu and link and sector and options #}
+            <a href="{{root_doc}}/front/{{mainurl}}.php" title="{{'Home'|trans}}">{{'Home'|trans}}</a>
+        </li>
+        <li class='breadcrumb_item'>
+            <a href="{{root_doc}}{{link}}" title="{{menu[sector]['title']}}">{{menu[sector]['title']}}</a>
+        </li>
+
+{% if show_page %}
+        <li class="breadcrumb_item">
+            <a href="{{ root_doc ~ menu[sector]['content'][item]['page'] }}" {{with_option ? 'class="here'}} title="{{ menu[sector]['content'][item]['title'] }}">
+                <i class="{{ menu[sector]['content'][item]['icon'] ?? '' }}"></i>{{ menu[sector]['content'][item]['title'] }}
+            </a>
+        </li>
+{% endif %}   
+</ul>
+</div>
+</nav>

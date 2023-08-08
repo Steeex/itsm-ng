@@ -1,0 +1,21 @@
+<nav id='main_menu'>
+    <div id='c_menu'>
+        {# fullmenu set dropdown on focus line 7441 html class#}
+        <ul id='menu' class='fullmenu'> 
+{% for data in menu|filter(data => data['show_menu']) %}
+            <li id='menu{{loop.index}}' data-id='{{loop.index}}' class='{{data['class']}}'> {# loop.index starts at 1 #}
+                <a href='{{data['link']}}' class='itemP'>{{data['title']}}</a>
+    {% if data['show_sub_menu'] %}
+                <ul class='ssmenu'>
+        {% for key,val in data['content']|filter(val => val['show_sub_menu']) %}
+                    <li >
+                        <a href='{{[root_doc,val['page']]|join}}' {{val['shortcut_attr']|raw}}>
+                            <i class='fa-fw {{val['icon']}}'></i>{{val['title']}}
+                        </a>
+                    </li>
+        {% endfor %}
+                </ul>
+    {% endif %}
+            </li>
+{% endfor %}
+</ul>

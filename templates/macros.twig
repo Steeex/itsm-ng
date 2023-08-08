@@ -8,12 +8,29 @@
 
 {% macro button(type = "button", text, name, value) %}
 {% if type != "submit" %}
-    <button type="{{ type }}" name="{{ name }}" value="{{ value|e }}"/></button>
+    <button type="{{type|default("submit")}}" name="{{name|default("submit")}}" class="{{class|default("submit")}}" value="{{ value|e }}"/></button>
 {% else %}
     <button type="{{ type }}" name="{{ name }}" value="{{ value|e }}" class="btn btn-warning submit"/><i class="fas fa-circle-o-notch fa-spin" aria-hidden="true"></i>{{text}}</button>
 {% endif %}
 {% endmacro %}
 
+{% macro language_dropdown(languages, selected_language = none) %}
+<select name="language" class="selectpicker" data-live-search="true" data-size="auto">
+    {% for region,language_list in languages %}
+    <optgroup label={{region|capitalize}}>
+    {% for language_data in language_list %}
+    {% for code, language in language_data %}
+    {% if code == selected_language %}
+        <option value={{code}} selected>{{language['native']}}</option>
+    {% else %}
+        <option value={{code}}>{{language['native']}}</option>7
+    {% endif %}
+    {% endfor %}
+    {% endfor %}
+    {% endfor %}
+</select>
+{% endmacro %}
+    
 {% macro table( 
     args    = { 
               },
@@ -58,7 +75,7 @@
         </tbody>
     </table>
 </div>
-<input id="table_input" type="hidden" name="{{args.post_name}}" value='test'>
+<input id="table_input" type="hidden" name="{{args.post_name}}" value=''>
 <script>   
     $('form').on("submit", function() {
         selection = $('#table').bootstrapTable('getSelections');
@@ -73,3 +90,9 @@
     });
 </script>
 {% endmacro table %}
+
+{% macro hidden(args = {field_name : "", options : []}) %}
+    {% for key,value in options['value'] %}
+        <input type="hidden" name="{{field_name}}[{{key}}]" "{{options|filter(key,value => key != 'value')|join(' ')}}"/>
+    {% endfor %}
+{% endmacro %}
