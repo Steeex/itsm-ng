@@ -1554,6 +1554,7 @@ JAVASCRIPT;
          echo Html::script('public/lib/scrollable-tabs.js');
       }
       echo Html::css('css/test.css');
+      echo Html::css('css/ecrase.css');
       // End of Head
       echo "</head>\n";
       self::glpi_flush();
@@ -1854,7 +1855,7 @@ JAVASCRIPT
          )
       ];
 
-
+      $twig_vars["copyright_message"] = self::getCopyrightMessage(); 
       $twig_vars['is_slave'] = $DB->isSlave() && !$DB->first_connection;
       require_once GLPI_ROOT . "/ng/twig.function.php";
       $twig = Twig::load(GLPI_ROOT . "/templates", false, true);
@@ -1883,19 +1884,16 @@ JAVASCRIPT
       if (isset($_REQUEST['_in_modal']) && $_REQUEST['_in_modal']) {
          return self::popFooter();
       }
-
+      echo "test";
       // Print foot for every page
       if ($FOOTER_LOADED) {
          return;
       }
       $FOOTER_LOADED = true;
-      echo "</main>"; // end of "main role='main'"
 
-      echo "<footer role='contentinfo' id='footer'>";
-      echo "<table role='presentation'><tr>";
-
+      $mode_debug = false;
       if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) { // mode debug
-         echo "<td class='left'><span class='copyright'>";
+         $mode_debug = true;
          $timedebug = sprintf(
             _n('%s second', '%s seconds', $TIMER_DEBUG->getTime()),
             $TIMER_DEBUG->getTime()
@@ -1904,31 +1902,29 @@ JAVASCRIPT
          if (function_exists("memory_get_usage")) {
             $timedebug = sprintf(__('%1$s - %2$s'), $timedebug, Toolbox::getSize(memory_get_usage()));
          }
-         echo $timedebug;
-         echo "</span></td>";
       }
-
+      $twig_vars["mode_debug"] = $mode_debug;
+      $twig_vars["timedebug"] = $timedebug;
       $currentVersion = preg_replace('/^((\d+\.?)+).*$/', '$1', GLPI_VERSION);
       $foundedNewVersion = array_key_exists('founded_new_version', $CFG_GLPI)
          ? $CFG_GLPI['founded_new_version']
          : '';
       if (!empty($foundedNewVersion) && version_compare($currentVersion, $foundedNewVersion, '<')) {
-         echo "<td class='copyright'>";
-         $latest_version = "<a href='http://www.glpi-project.org' target='_blank' title=\""
+         $twig_vars["latest_version"] = "<a href='http://www.glpi-project.org' target='_blank' title=\""
             . __s('You will find it on the GLPI-PROJECT.org site.') . "\"> "
             . $foundedNewVersion
             . "</a>";
-         printf(__('A new version is available: %s.'), $latest_version);
 
-         echo "</td>";
       }
-      echo "<td class='right'>" . self::getCopyrightMessage() . "</td>";
-      echo "</tr></table></footer>";
-
-      if ($CFG_GLPI['maintenance_mode']) { // mode maintenance
-         echo "<div id='maintenance-float'>";
-         echo "<a href='#see_maintenance'>GLPI MAINTENANCE MODE</a>";
-         echo "</div>";
+      $twig_vars["copyright_message"] = self::getCopyrightMessage(); 
+      $twig_vars["maintenance_mode"] = $CFG_GLPI['maintenance_mode'];
+      
+      require_once GLPI_ROOT . "/ng/twig.function.php";
+      $twig = Twig::load(GLPI_ROOT . "/templates", false, true);
+      try {
+         echo $twig->render('footer.twig',  $twig_vars );
+      } catch (\Exception $e) {
+         echo $e->getMessage();
       }
       self::displayDebugInfos();
       self::loadJavascript();
@@ -7298,7 +7294,7 @@ JAVASCRIPT;
     */
    private static function displayMainMenu($full, $options = []) : array
    {
-      global $CFG_GLPI, $PLUGIN_HOOKS;
+      global $CFG_GLPI, $PLUGIN_HOOKS, $DB;
 
       $sector = '';
 
@@ -7351,11 +7347,18 @@ JAVASCRIPT;
             ];
          }
       }
-
       $menu = Plugin::doHookFunction("redefine_menus", $menu);
-
       $already_used_shortcut = ['1'];
       
+      $menu_favorites = $DB->request(
+         [
+             'SELECT' => 'menu_favorite',
+             'FROM'   => 'glpi_users',
+             'WHERE'  => ['id' => $_SESSION["glpiID"]]
+         ]
+     );
+     $menu_favorites = json_decode($menu_favorites->next()['menu_favorite'], true);
+
       
       // if ($full === false) {
       //    // Display Home menu
@@ -7380,7 +7383,8 @@ JAVASCRIPT;
                foreach ($data['content'] as $key => $val) {
                   if (!is_array($val))
                   continue;
-
+                  $menu[$part]['content'][$key]['is_favorite'] = in_array($key, $menu_favorites[$part]);
+                  $menu[$part]['content'][$key]['part'] = $part;
                   $menu[$part]['content'][$key]['sub_menu_class'] = "";
                   $tmp_active_item  = explode("/", $item);
                   $active_item      = array_pop($tmp_active_item);
@@ -7418,8 +7422,18 @@ JAVASCRIPT;
             }
          }
       }
-
-     
+      $favorite = 
+      ['favorite' => [
+         'title' => 'Favorite',
+         'types' => [],
+         'default' => 'none',
+         'content' => [],
+         'show_menu' => true,
+         'class' => '',
+         'link' => '',
+         'show_sub_menu' => true
+      ]];
+      $menu = array_merge($favorite, $menu);
       // end #menu
       // Display MENU ALL
       //self::displayMenuAll($menu);
@@ -7446,7 +7460,8 @@ JAVASCRIPT;
       }
       $template_path = 'menu.twig';
       $twig_vars = [ "root_doc" => $CFG_GLPI['root_doc'], "menu" => $menu, 
-                     "mainurl" => $mainurl, "show_page" => $show_page, "link" => $link, "item" => $item, 
+                     "mainurl" => $mainurl, "show_page" => $show_page, 
+                     "link" => $link, "item" => $item, 
                      "option" => $option, "sector"=> $sector];
 
       // Add common items
@@ -7457,6 +7472,10 @@ JAVASCRIPT;
       //    self::showProfileSelecter($CFG_GLPI["root_doc"] . "/front/$mainurl.php");
       // }
       return ["path" => $template_path, "args" => $twig_vars];
+   }
+
+   static function addMenuFavorite($menu, $menu_name, $sub_menu_name) : void {
+      $menu['favorite'][] = $menu[$menu_name]['content'][$sub_menu_name];
    }
    /**
     * Invert the input color (usefull for label bg on top of a background)
@@ -7680,8 +7699,7 @@ JAVASCRIPT;
     */
    public static function displayImpersonateBanner() : array
    {
-
-      echo "la";
+      
       if (!Session::isImpersonateActive()) {
          return [];
       }

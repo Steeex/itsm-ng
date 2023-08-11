@@ -1,38 +1,46 @@
 {% from "macros.twig" import table %}
 <body class={{body_class}}>
 
-{# imersponeat #}
-qsdfqsdf
+
 {% if impersonate_banner is defined %}
-azehgaezaezg
+{% include impersonate_banner.path with impersonate_banner.args%}
 {% endif %}
 
-    <div id='header'>
         <header role='banner' id='header_top'>
-        <div id='c_logo'>
-        <a href="{{root_doc}}/front/central.php" accesskey='1' title={{"Home"|trans}}>
-            <span class='sr-only'>{{"Home"|trans}}</span>
-        </a>
+            <div id="searchbar">
+                <input id="searchbar" type="search" placeholder="Search here ..."> 
+                <i class="fa fa-search"></i>
+            </div>
+            <div class="header_logo" id='c_logo'>
+                <a href="{{root_doc}}/front/central.php" accesskey='1' title={{"Home"|trans}}>
+                    <span class='sr-only'>{{"Home"|trans}}</span>
+                </a>
+            </div>
+        </header> 
+
+<div id="main-test">
+    <div id="menu" class="menu">
+        <div id="menu-button" onclick="changeMenuState()">
+           <i class="fas fa-caret-left"></i>
+            <script>
+            function changeMenuState(){
+                is_menu_close = $('#menu').hasClass('menu-close');
+                $('#menu').toggleClass('menu-close', !is_menu_close);
+                $('#header_top').toggleClass('menu-close', !is_menu_close);
+            }
+            </script>
         </div>
-
-{# topmenu #}
-{% include top_menu.path with top_menu.args%}
-        </header> {# fin header_top #}
-
-{% include main_menu.path with main_menu.args%}
-    </div> {# fin header #}
-
-{# Back to top button #}
-<span class='fa-stack fa-lg' id='backtotop' style='display: none'>
-   <i class='fa fa-circle fa-stack-2x primary-fg-inverse'></i>
-    <a href='#' class='fa fa-arrow-up fa-stack-1x primary-fg' title={{'Back to top of the page'|trans}}>
-        <span class='sr-only'>Top of the page</span>
-    </a>
-</span>
-
-<main role='main' id='page'>
-{% if is_slave %}
-    <div id='dbslave-float'>
-        <a href='#see_debug'>{{'SQL replica: read only'|trans}}</a>
+        {# <div id="menu-favorite-button" onclick="activateFavoriteMode()">
+            <i class="fas fa-cog"></i>
+            <script>
+            function activateFavoriteMode(){
+                is_favorite_select = $('#menu').hasClass('favorite-mode');
+                $('#menu').toggleClass('favorite-mode', !is_favorite_select);
+            }
+            </script>
+        </div> #}
+        {% include main_menu.path with main_menu.args%}
+        {% include top_menu.path with top_menu.args%}
+        <div class="copyright-message">{{copyright_message|raw}}</div>
     </div>
-{% endif %}
+        <main role='main' id='page'>
