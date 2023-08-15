@@ -1,8 +1,10 @@
 {% from 'macros.twig' import button, language_dropdown %}
+
+
 <h3>{{'Select your language'|trans}}</h3>
-    <div class="language">
-        <form action="install.php?step=1" method="post">
+<div class="language">
+    <form action="install.php?step=1" method="post">
         {{language_dropdown(languages, preferred_language)}}
         {{button('submit', 'OK'|trans)}}
-        </form>
-    </div>
+    </form>
+</div>

@@ -3,7 +3,7 @@
 
 
 {% if impersonate_banner is defined %}
-{% include impersonate_banner.path with impersonate_banner.args%}
+    {% include impersonate_banner.path with impersonate_banner.args%}
 {% endif %}
 
         <header role='banner' id='header_top'>
@@ -30,17 +30,27 @@
             }
             </script>
         </div>
-        {# <div id="menu-favorite-button" onclick="activateFavoriteMode()">
-            <i class="fas fa-cog"></i>
-            <script>
-            function activateFavoriteMode(){
-                is_favorite_select = $('#menu').hasClass('favorite-mode');
-                $('#menu').toggleClass('favorite-mode', !is_favorite_select);
-            }
-            </script>
-        </div> #}
-        {% include main_menu.path with main_menu.args%}
-        {% include top_menu.path with top_menu.args%}
+        {% include main_menu.path with main_menu.args %}
+        {% include top_menu.path with top_menu.args %}
         <div class="copyright-message">{{copyright_message|raw}}</div>
     </div>
+    <div class="main-container">
+        <div id='c_ssmenu2' >
+            <ul>
+            {# need menu and link and sector and options #}
+                <li class='breadcrumb_item'>  
+                    <a href="{{root_doc}}/front/{{mainurl}}.php" title="{{'Home'|trans}}">{{'Home'|trans}}</a>
+                </li>
+                <li class='breadcrumb_item'>
+                    <a href="{{root_doc}}{{link}}" title="{{menu[sector]['title']}}">{{menu[sector]['title']}}</a>
+                </li>
+{% if show_page %}
+                <li class="breadcrumb_item">
+                    <a href="{{ root_doc ~ menu[sector]['content'][item]['page'] }}" {{with_option ? 'class="here'}} title="{{ menu[sector]['content'][item]['title']}}">
+                        <i class="{{ menu[sector]['content'][item]['icon'] ?? '' }}"></i>{{ menu[sector]['content'][item]['title'] }}
+                    </a>
+                </li>
+{% endif %}   
+            </ul>
+        </div>
         <main role='main' id='page'>

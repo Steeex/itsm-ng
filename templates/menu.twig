@@ -1,157 +1,110 @@
-{# TODO ADD TRAAAAAAAAAAANS #}
-
-{% set icons = [  
-    'fa-star',
-    'fa-warehouse',
-    'fa-hands-helping',
-    'fa-tasks',
-    'fa-tools',
-    'fa-users-cog',
-    'fa-clipboard-list',
-    'fa-puzzle-piece',
-] %}
 <nav class="nav-side-menu">
-    {# <div class="brand">Menu</div>
-    <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i> #}
 
     <div class="menu-list">
   
         <ul id="menu-content" class="menu-content collapse out">
-                {# <li>
-                  <a href="#">
-                  <i class="fa fa-dashboard fa-lg"></i> Dashboard
-                  </a>
-                </li> 
-                <i class="fas fa-star
-                'fa-warehouse',
-                'fa-hands-helping',
-                'fa-tasks',
-                'fa-tools',
-                'fa-users-cog',
-                'fa-clipboard-list',
-                'fa-puzzle-piece',
-                #}
+
 {% for menu_name, data in menu|filter(data => data['show_menu']) %}
-            <li title="{{data['title']}}" data-toggle="collapse" id='menu-{{menu_name}}' data-target="#submenu-{{menu_name}}" data-id='{{loop.index}}' class='collapsed {{data['class']}}'> {# loop.index starts at 1 mettre active bone page #}
-                <i class="fas {{icons[loop.index0]}}"></i>
+
+            <li title="{{data['title']}}" data-toggle="collapse" id='menu-{{menu_name}}' data-target="#submenu-{{menu_name}}" data-id='{{loop.index}}' class='collapsed {{data['class']}}' onclick="openMenu(this, '{{menu_name}}')"> {# loop.index starts at 1 mettre active bone page #}
+                <i class="fas {{menu[menu_name]['icon']}}"></i>
                 <p>{{data['title']}}</p>
+
                 {% if menu_name == 'favorite' %}
+
                 <div id="menu-favorite-button" onclick="activateFavoriteMode()">
                     <i class="fas fa-cog"></i>
-                    <script>
-                    function activateFavoriteMode(){
-                        is_favorite_select = $('#menu').hasClass('favorite-mode');
-                        $('#menu').toggleClass('favorite-mode', !is_favorite_select);
-                    }
-                    </script>
                 </div>
+
                 {% endif %}
+
             </li>
-    {# TODO IMPORLMENT FAVORI #}
+            
     {% if data['show_sub_menu'] %}
-            <ul class='sub-menu ssmenu collapse' id='submenu-{{menu_name}}'>
-                {% if menu_name == 'favorite' %}
-                {# href="{{root_doc}}{{val['page']}}" #}
+
+            <ul class='sub-menu ssmenu collapse {{val['is_open'] ? 'show'}}' id='submenu-{{menu_name}}'>
+
+        {% if menu_name == 'favorite' %}
+
                 <p>You can add your favorite section to this menu. To do this click on the cogwheel then click and the star next to the menu you wish to add as a favorite.</p>
-        {% for sub_menu_name,val in data['content']|filter(val => val['show_sub_menu']) %}
-                <li id='section-{{sub_menu_name}}' class="section {{menu[val['part']]['content'][sub_menu_name]['sub_menu_class']}}">
-                    <a  href="{{root_doc}}{{val['page']}}" {{val['shortcut_attr']|raw}} class="{{var['menu_favorite'] ? 'section-favorite'}}">
+            {% for menu_name, data in menu|filter(data => data['show_menu']) %}
+                {% for sub_menu_name,val in data['content']|filter(val => val['show_sub_menu']) %}
+                    {% if val['is_favorite'] %}
+
+                <li id='section-{{sub_menu_name}}' class="{{val['is_favorite'] ? 'section-favorite'}} {{menu[val['part']]['content'][sub_menu_name]['sub_menu_class']}}">
+                    <a  href="{{root_doc}}{{val['page']}}" {{val['shortcut_attr']|raw}}>
                         <i class='fa-fw {{val['icon']}}'></i><p>{{val['title']}}</p>
                     </a>
                     <i class="star-icon" onclick="addFavorite(this, '{{menu_name}}', '{{sub_menu_name}}')">
-                        <script>
-                            function addFavorite(item, menu_name, sub_menu_name){
-                                ul = document.getElementById('submenu-favorite');
-                                li = item.parentElement;
-                                is_menu_favorite = $(li).hasClass('section-favorite');
-                                $(li).toggleClass('section-favorite', !is_menu_favorite);
-                                if(is_menu_favorite){
-                                    if (li.parentElement.id == "submenu-favorite"){
-                                        $(document).find('#' + li.id.replace('favorite-','')).toggleClass('section-favorite', false);
-                                        li.remove();
-                                    }
-                                    else {
-                                        $(ul).find('#favorite-' + li.id).remove();
-                                    }
-                                } else {
-                                    new_li = li.cloneNode(true);
-                                    new_li.id = 'favorite-' + li.id;
-                                    ul.appendChild(new_li);
-                                }
-                                $.ajax({
-                                    type: "POST",
-                                    url: "../ng/db.addFavorite.php",
-                                    data: {
-                                    remove: is_menu_favorite,
-                                    menu_name: menu_name,
-                                    submenu_name: sub_menu_name,
-                                    },
-                                });
-                            }
-                            </script>
                     </i>
-                    </li>
+                </li>
+
+                    {% endif %}
                 {% endfor %}
-                {% endif %}
+            {% endfor %}
+        {% endif %}
         {% for sub_menu_name,val in data['content']|filter(val => val['show_sub_menu']) %}
-                <li id='section-{{sub_menu_name}}' class="section {{menu[val['part']]['content'][sub_menu_name]['sub_menu_class']}}">
-                    <a  href="{{root_doc}}{{val['page']}}" {{val['shortcut_attr']|raw}} class="{{var['menu_favorite'] ? 'section-favorite'}}">
+
+                <li id='section-{{sub_menu_name}}' class="{{val['is_open'] ? 'show'}} {{val['is_favorite'] ? 'section-favorite'}} {{menu[val['part']]['content'][sub_menu_name]['sub_menu_class']}}">
+                    <a  href="{{root_doc}}{{val['page']}}" {{val['shortcut_attr']|raw}} class="{{val['is_favorite'] ? 'section-favorite'}}">
                         <i class='fa-fw {{val['icon']}}'></i><p>{{val['title']}}</p>
                     </a>
                     <i class="star-icon" onclick="addFavorite(this, '{{menu_name}}', '{{sub_menu_name}}')">
-                        <script>
-                            function addFavorite(item, menu_name, sub_menu_name){
-                                ul = document.getElementById('submenu-favorite');
-                                li = item.parentElement;
-                                is_menu_favorite = $(li).hasClass('section-favorite');
-                                $(li).toggleClass('section-favorite', !is_menu_favorite);
-                                if(is_menu_favorite){
-                                    if (li.parentElement.id == "submenu-favorite"){
-                                        $(document).find('#' + li.id.replace('favorite-','')).toggleClass('section-favorite', false);
-                                        li.remove();
-                                    }
-                                    else {
-                                        $(ul).find('#favorite-' + li.id).remove();
-                                    }
-                                } else {
-                                    new_li = li.cloneNode(true);
-                                    new_li.id = 'favorite-' + li.id;
-                                    ul.appendChild(new_li);
-                                }
-                                $.ajax({
-                                    type: "POST",
-                                    url: "../ng/db.addFavorite.php",
-                                    data: {
-                                    remove: is_menu_favorite,
-                                    menu_name: menu_name,
-                                    submenu_name: sub_menu_name,
-                                    },
-                                });
-                            }
-                            </script>
                     </i>
-                    </li>
+                </li>
+
         {% endfor %}
+
             </ul>
+
     {% endif %}
 {% endfor %}
+
         </ul>
     </div>
-    {# <div id='c_ssmenu2' >
-        <ul>
-            <li class='breadcrumb_item'>  need menu and link and sector and options
-                <a href="{{root_doc}}/front/{{mainurl}}.php" title="{{'Home'|trans}}">{{'Home'|trans}}</a>
-            </li>
-            <li class='breadcrumb_item'>
-                <a href="{{root_doc}}{{link}}" title="{{menu[sector]['title']}}">{{menu[sector]['title']}}</a>
-            </li>
-{% if show_page %}
-            <li class="breadcrumb_item">
-                <a href="{{ root_doc ~ menu[sector]['content'][item]['page'] }}" {{with_option ? 'class="here'}} title="{{ menu[sector]['content'][item]['title'] }}">
-                    <i class="{{ menu[sector]['content'][item]['icon'] ?? '' }}"></i>{{ menu[sector]['content'][item]['title'] }}
-                </a>
-            </li>
-{% endif %}   
-            </ul>
-    </div> #}
 </nav>
+<script>
+    function activateFavoriteMode(){
+        is_favorite_select = $('#menu').hasClass('favorite-mode');
+        $('#menu').toggleClass('favorite-mode', !is_favorite_select);
+    }
+    function openMenu(item, menu_name){
+        is_menu_closed = $(item).hasClass('collapsed');
+        $.ajax({
+            type: "POST",
+            url: "../ng/db.openMenu.php",
+            data: {
+            menu_name: menu_name,
+            closed: is_menu_closed,
+            },
+        });
+    }
+    function addFavorite(item, menu_name, sub_menu_name){
+        ul = document.getElementById('submenu-favorite');
+        li = item.parentElement;
+        is_menu_favorite = $(li).hasClass('section-favorite');
+        $(li).toggleClass('section-favorite', !is_menu_favorite);
+        if(is_menu_favorite){ //removing favorite
+            if (li.parentElement.id == "submenu-favorite"){ //check if user clicked the star in the favorite menu or in other menu
+                $(document).find('#' + li.id.replace('favorite-','')).toggleClass('section-favorite', false);
+                li.remove();
+            }
+            else {
+                $(ul).find('#favorite-' + li.id).remove();
+            }
+        } else { //adding favorite
+            new_li = li.cloneNode(true);
+            new_li.id = 'favorite-' + li.id;
+            ul.appendChild(new_li);
+        }
+        $.ajax({
+            type: "POST",
+            url: "../ng/db.addFavorite.php",
+            data: {
+            remove: is_menu_favorite,
+            menu_name: menu_name,
+            submenu_name: sub_menu_name,
+            },
+        });
+    }
+    </script>
