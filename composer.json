@@ -76,9 +76,15 @@
         "ext-sodium": "Used to provide strong encryption for sensitive data in database"
     },
     "config": {
+<<<<<<< HEAD
         "optimize-autoloader": true,
         "platform": {
         "php": "7.2.9"
+=======
+	     "optimize-autoloader": true,
+        "platform": {
+            "php": "7.2.9"
+>>>>>>> refs/remotes/origin/dump
         },
         "sort-packages": true
     },

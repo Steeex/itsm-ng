@@ -1553,7 +1553,11 @@ JAVASCRIPT;
       ) {
          echo Html::script('public/lib/scrollable-tabs.js');
       }
+<<<<<<< HEAD
       echo Html::css('css/test.css');
+=======
+      echo Html::scss('css/itsm2.scss');
+>>>>>>> refs/remotes/origin/dump
       echo Html::css('css/ecrase.css');
       // End of Head
       echo "</head>\n";
@@ -1837,6 +1841,7 @@ JAVASCRIPT
       $impersonate_banner = Html::displayImpersonateBanner();
       if (!empty($impersonate_banner)) {
          $twig_vars += ["impersonate_banner" => $impersonate_banner];
+<<<<<<< HEAD
       }
       
       
@@ -1857,6 +1862,68 @@ JAVASCRIPT
       } catch (\Exception $e) {
          echo $e->getMessage();
       }
+=======
+      }
+      
+      //Main menu
+      $twig_vars += ["main_menu" => self::getMainMenu($sector, $item, $option)];
+      $twig_vars += self::getMainMenu($sector, $item, $option)['args']; //TODO : change to only add breadcrumb var.
+      // TODO : separate menu from header
+      // Preferences and logout link
+      $twig_vars += ["top_menu" => self::getBottomMenu(true)];
+               
+      $twig_vars["copyright_message"] = self::getCopyrightMessage(); 
+      $twig_vars["ITSM_VERSION"] = ITSM_VERSION;
+      $twig_vars["ITSM_YEAR"] = ITSM_YEAR;
+      $twig_vars['is_slave'] = $DB->isSlave() && !$DB->first_connection;
+
+      $DB->queryOrDie(
+         'ALTER TABLE glpi_users ADD COLUMN IF NOT EXISTS menu_position longtext'
+      );
+
+      $twig_vars['menu_position'] = $DB->request(
+             [
+                 'SELECT' => 'menu_position',
+                 'FROM'   => 'glpi_users',
+                 'WHERE'  => ['id' => $_SESSION["glpiID"]]
+             ]
+         )->next()['menu_position'];
+
+      $DB->queryOrDie(
+         'ALTER TABLE glpi_users ADD COLUMN IF NOT EXISTS menu_small longtext'
+      );
+
+      $twig_vars['menu_small'] = $DB->request(
+               [
+                  'SELECT' => 'menu_small',
+                  'FROM'   => 'glpi_users',
+                  'WHERE'  => ['id' => $_SESSION["glpiID"]]
+               ]
+         )->next()['menu_small'];
+      $twig_vars['menu_small'] = filter_var($twig_vars['menu_small'], FILTER_VALIDATE_BOOLEAN);
+
+      $DB->queryOrDie(
+         'ALTER TABLE glpi_users ADD COLUMN IF NOT EXISTS menu_width longtext'
+      );
+
+      $menu_width = $DB->request(
+               [
+                  'SELECT' => 'menu_width',
+                  'FROM'   => 'glpi_users',
+                  'WHERE'  => ['id' => $_SESSION["glpiID"]]
+               ]
+         );
+
+      $menu_width = json_decode($menu_width->next()['menu_width'], true);
+      $twig_vars['menu_width'] = $menu_width;
+      require_once GLPI_ROOT . "/ng/twig.function.php";
+      $twig = Twig::load(GLPI_ROOT . "/templates", false, true);
+      try {
+         echo $twig->render('header.twig',  $twig_vars );
+      } catch (\Exception $e) {
+         echo $e->getMessage();
+      }
+>>>>>>> refs/remotes/origin/dump
       // call static function callcron() every 5min
       CronTask::callCron();
       self::displayMessageAfterRedirect();
@@ -7344,7 +7411,12 @@ JAVASCRIPT;
  
        echo "</ul>";
        echo "</div>\n";
+<<<<<<< HEAD
     }
+=======
+   }
+   
+>>>>>>> refs/remotes/origin/dump
    /**
     * Return ITSM bottom menu
     *
@@ -7835,6 +7907,7 @@ JAVASCRIPT;
        echo "</div>";
        echo "</nav>";
     }
+<<<<<<< HEAD
 
    /**
     * Return ITSM main menu
@@ -7847,8 +7920,20 @@ JAVASCRIPT;
    private static function getMainMenu($sector, $item, $option) : array
    {
       global $CFG_GLPI, $PLUGIN_HOOKS, $DB;
+=======
+>>>>>>> refs/remotes/origin/dump
 
-      $sector = '';
+   /**
+    * Return ITSM main menu
+    *
+    * @param array   $options Option
+    *
+    * @since 2.0.0
+    * @return array
+    */
+   private static function getMainMenu($sector, $item, $option) : array
+   {
+      global $CFG_GLPI, $PLUGIN_HOOKS, $DB;
 
       // Generate array for menu and check right
 
@@ -7867,10 +7952,27 @@ JAVASCRIPT;
              'FROM'   => 'glpi_users',
              'WHERE'  => ['id' => $_SESSION["glpiID"]]
          ]
+<<<<<<< HEAD
      );
      
      $menu_favorites = json_decode($menu_favorites->next()['menu_favorite'], true);
       
+=======
+      );
+     
+     $menu_favorites = json_decode($menu_favorites->next()['menu_favorite'], true);
+     $DB->queryOrDie(
+        'ALTER TABLE glpi_users ADD COLUMN IF NOT EXISTS menu_open longtext'
+     );
+     $menu_collapse = $DB->request(
+      [
+          'SELECT' => 'menu_open',
+          'FROM'   => 'glpi_users',
+          'WHERE'  => ['id' => $_SESSION["glpiID"]]
+      ]
+      );
+      $menu_collapse = json_decode($menu_collapse->next()['menu_open'], true);
+>>>>>>> refs/remotes/origin/dump
       $icons = [  
          'favorite' => 'fa-star',
          'assets' => 'fa-warehouse',
@@ -7882,11 +7984,32 @@ JAVASCRIPT;
          'config' => 'fa-clipboard-list',
          'preference' => 'fa-cog'            
       ];
+<<<<<<< HEAD
       // Format $menu to pass to Twig
       foreach ($menu as $part => $data) {
          $menu[$part]['show_menu'] = false;
          // Checks if menu contains a submenu
          if (isset($data['content']) && count($data['content'])) {
+=======
+      $favorite = 
+      ['favorite' => [
+         'title' => 'Favorite',
+         'types' => [],
+         'default' => 'none',
+         'content' => [],
+      ]];
+
+      $menu = array_merge($favorite, $menu);   
+      // Format $menu to pass to Twig
+      // print_r($menu);
+      foreach ($menu as $part => $data) {
+         $menu[$part]['show_menu'] = false;
+         // Checks if menu contains a submenu
+         if (isset($data['content']) && count($data['content']) || $part == 'favorite') {
+            if (!is_null($menu_collapse)){
+               $menu[$part]['is_open'] = in_array($part, $menu_collapse);
+            }
+>>>>>>> refs/remotes/origin/dump
             $menu[$part]['icon'] = $icons[$part];
             $menu[$part]['show_menu'] = true;
             $menu[$part]['class'] = (isset($menu[$sector]) && $menu[$sector]['title'] == $data['title']) ? "active" : "";
@@ -7939,6 +8062,7 @@ JAVASCRIPT;
          }
       }
 
+<<<<<<< HEAD
       $favorite = 
       ['favorite' => [
          'title' => 'Favorite',
@@ -7957,10 +8081,30 @@ JAVASCRIPT;
       // Display item
       $mainurl = 'central';
 
+=======
+      // $favorite = 
+      // ['favorite' => [
+      //    'title' => 'Favorite',
+      //    'types' => [],
+      //    'default' => 'none',
+      //    'content' => [],
+      //    'show_menu' => true,
+      //    'class' => '',
+      //    'link' => '',
+      //    'show_sub_menu' => true,
+      //    'icon' => 'fa-star'
+      // ]];
+
+      // $menu = array_merge($favorite, $menu);   
+
+      // Display item
+      $mainurl = 'central';
+      $link = "";
+>>>>>>> refs/remotes/origin/dump
       if (isset($menu[$sector])) {
          $link = (isset($menu[$sector]['default'])) ? $menu[$sector]['default'] :"/front/central.php";
       }
-
+      $show_page = "";
       if (isset($menu[$sector]['content'][$item])) {
          // Title
          $show_page = isset($menu[$sector]['content'][$item]['page']);
@@ -7971,6 +8115,19 @@ JAVASCRIPT;
                      "link" => $link, "item" => $item, 
                      "option" => $option, "sector"=> $sector];
 
+<<<<<<< HEAD
+      if (isset($menu[$sector]['content'][$item])) {
+         // Title
+         $show_page = isset($menu[$sector]['content'][$item]['page']);
+      }
+      $template_path = 'menu.twig';
+      $twig_vars = [ "root_doc" => $CFG_GLPI['root_doc'], "menu" => $menu, 
+                     "mainurl" => $mainurl, "show_page" => $show_page, 
+                     "link" => $link, "item" => $item, 
+                     "option" => $option, "sector"=> $sector];
+
+=======
+>>>>>>> refs/remotes/origin/dump
       // TODO: add profile selector
       // Profile selector
       // check user id : header used for display messages when session logout
@@ -7983,6 +8140,10 @@ JAVASCRIPT;
    static function addMenuFavorite($menu, $menu_name, $sub_menu_name) : void {
       $menu['favorite'][] = $menu[$menu_name]['content'][$sub_menu_name];
    }
+<<<<<<< HEAD
+=======
+   
+>>>>>>> refs/remotes/origin/dump
    /**
     * Invert the input color (usefull for label bg on top of a background)
     * inpiration: https://github.com/onury/invert-color

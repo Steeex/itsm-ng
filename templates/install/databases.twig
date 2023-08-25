@@ -40,9 +40,14 @@
         
         {% endif %}
     
+<<<<<<< HEAD
     {{dump(databases)}}
     {{table(
         { post_name: "database"}, 
+=======
+    {{table(
+        { "post_name": "database"}, 
+>>>>>>> refs/remotes/origin/dump
         {   
             args: [{sortable: "true"}, {sortable: "true"}, {sortable: "true"}, {sortable: "true"}, {type: "radio"}],
             titles: ['name', 'table count', 'creation date', 'last update', 'select']

@@ -46,7 +46,11 @@
                 rows    :   []  : 2D list of row containing cells. ex: [['Emile', 'Zola', 62], ['Marcel', 'Proust', 41]] 
               }
     Both the table args and the column args have default values, check them in the macro 
+<<<<<<< HEAD
 #}
+=======
+#}open
+>>>>>>> refs/remotes/origin/dump
 {% macro table(args = {}, header = {args : [], titles : []}, body = {args : [], rows : []}) %}
 
     {# Default values of args and header args #}
@@ -69,8 +73,13 @@
                 <tr>
     {% for i in range(0, row_length) %}
                     {% set title = header.titles[i]%}
+<<<<<<< HEAD
                     {% set args = default_header_args|merge(header.args[i]) %}
                     <th data-field="{{args.field|default(title|replace({' ': '_'}))}}" data-radio="{{args.type == "radio"}}" data-checkbox="{{args.type == "checkbox"}}" data-sortable="{{args.sortable}}">{{title|capitalize}}</th>
+=======
+                    {% set row_args = default_header_args|merge(header.args[i]) %}
+                    <th data-field="{{row_args.field|default(title|replace({' ': '_'}))}}" data-radio="{{row_args.type == "radio"}}" data-checkbox="{{row_args.type == "checkbox"}}" data-sortable="{{row_args.sortable}}">{{title|capitalize}}</th>
+>>>>>>> refs/remotes/origin/dump
     {% endfor %}
                 </tr>
             </thead>
